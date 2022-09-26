@@ -9,6 +9,18 @@ SOLAR_EDGE_START = '2019-04-01'
 SOLAR_EDGE_ENERGY_URL = f'https://monitoringapi.solaredge.com/site/{config["location_id"]}/energy?api_key={config["api_key"]}&timeUnit=QUARTER_OF_AN_HOUR'
 SOLAR_EDGE_DETAIL_URL = f'https://monitoringapi.solaredge.com/equipment/{config["location_id"]}/{config["inverter_id"]}/data?api_key={config["api_key"]}'
 
+def parse_value(value):
+    if value == 'null' or value is None:
+        return None
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return value
+    if isinstance(value, float) or isinstance(value, int):
+        return value
+    raise ValueError('Unknown type of value')
+
 def is_valid_row(row):
     if row is None or not isinstance(row, dict):
         return False
@@ -20,14 +32,7 @@ def is_valid_row(row):
     return True
 
 def value_from_row(row):
-    value = row['value']
-    if value == 'null' or value is None:
-        return None
-    if isinstance(value, str):
-        return float(value)
-    if isinstance(value, float) or isinstance(value, int):
-        return value
-    raise ValueError('Unknown type of value')
+    return parse_value(row['value'])
 
 def csv_to_influx(rows):
     return [{
@@ -38,14 +43,16 @@ def csv_to_influx(rows):
             }
         } for x in rows if is_valid_row(x)]
 
-def get_all_fields_from_row(row):
-    l1 = row.pop('L1Data')
-    row.update(l1)
-    return row
+def get_all_fields_from_row(row: dict):
+    row.pop('date')
+    if 'L1Data' in row:
+        l1 = row.pop('L1Data')
+        row.update(l1)
+    return {key: parse_value(value) for key, value in row.items()}
 
 def telemetries_to_influx(telemetries):
     return [{
-            "measurement": "telemetries",
+            "measurement": "solaredge_details",
             "time": x['date'],
             "fields": get_all_fields_from_row(x)
         } for x in telemetries]
