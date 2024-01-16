@@ -1,11 +1,12 @@
 from dotenv import dotenv_values
 
+INFLUX_HOST = "192.168.2.200"
 INFLUX_DATABASE = "p1"
 INFLUX_MEASUREMENT = "solaredge"
 
 config = dotenv_values()
 
-SOLAR_EDGE_START = '2019-04-01'
+SOLAR_EDGE_START = '2023-07-17'
 SOLAR_EDGE_ENERGY_URL = f'https://monitoringapi.solaredge.com/site/{config["location_id"]}/energy?api_key={config["api_key"]}&timeUnit=QUARTER_OF_AN_HOUR'
 SOLAR_EDGE_DETAIL_URL = f'https://monitoringapi.solaredge.com/equipment/{config["location_id"]}/{config["inverter_id"]}/data?api_key={config["api_key"]}'
 

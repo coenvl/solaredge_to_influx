@@ -7,10 +7,10 @@ import requests
 from influxdb import InfluxDBClient
 from datetime import date, datetime
 
-from solaredge import INFLUX_DATABASE, SOLAR_EDGE_DETAIL_URL, SOLAR_EDGE_ENERGY_URL, csv_to_influx, telemetries_to_influx
+from solaredge import INFLUX_DATABASE, INFLUX_HOST, SOLAR_EDGE_DETAIL_URL, SOLAR_EDGE_ENERGY_URL, csv_to_influx, telemetries_to_influx
 
 if __name__ == '__main__':
-    influx = InfluxDBClient(host="192.168.178.200", port=8086, database=INFLUX_DATABASE)
+    influx = InfluxDBClient(host=INFLUX_HOST, port=8086, database=INFLUX_DATABASE)
 
     url = f'{SOLAR_EDGE_ENERGY_URL}&startDate={date.today()}&endDate={date.today()}'
     response = requests.get(url)

@@ -6,10 +6,10 @@ from datetime import date
 import pandas as pd
 import csv
 
-from solaredge import INFLUX_DATABASE, SOLAR_EDGE_START, csv_to_influx
+from solaredge import INFLUX_DATABASE, INFLUX_HOST, SOLAR_EDGE_START, csv_to_influx
 
 if __name__ == '__main__':
-    influx = InfluxDBClient(host="192.168.178.200", port=8086, database=INFLUX_DATABASE)
+    influx = InfluxDBClient(host=INFLUX_HOST, port=8086, database=INFLUX_DATABASE)
 
     pr = pd.period_range(start=SOLAR_EDGE_START,end=date.today().replace(day=1), freq='M')
     for d in pr:
